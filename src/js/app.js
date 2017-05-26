@@ -1,6 +1,7 @@
 import setPathCookie from './utils/setPathCookie.js'
 import removeMobileHover from './utils/removeMobileHover.js'
 import wireSocialButtons from './utils/wireSocialButtons.js'
+import Stories from './Stories.js'
 
 removeMobileHover()
 setPathCookie()
@@ -15,3 +16,5 @@ if (document.querySelectorAll('.g-header__share').length) {
 		twitter: '.g-header__share-button--tw',
 	})
 }
+
+new Stories()

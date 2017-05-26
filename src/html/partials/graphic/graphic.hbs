@@ -1,0 +1,25 @@
+<article class="mblvd-stories">
+  <div data-in-view>
+    {{#each copy.stories}}
+      {{#if segue}}
+        <div class="mblvd-stories__segue">
+          {{#each segue}}
+            <p class="mblvd-stories__segue-p">{{p}}</p>
+          {{/each}}
+        </div>
+      {{/if}}
+      <section class="mblvd-stories__story" data-story>
+        <div class="mblvd-stories__sticky" data-sticky>
+          <div class="mblvd-stories__image-container">
+            <img src="assets/images/{{image}}" class="mblvd-stories__image" data-image/>
+          </div>
+        </div>
+        <div class="mblvd-stories__text">
+          {{#each text}}
+            <p class="mblvd-stories__story-p">{{p}}</p>
+          {{/each}}
+        </div>
+      </section>
+    {{/each}}
+  </div>
+</article>

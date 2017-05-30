@@ -1,4 +1,5 @@
 import { select, selectAll, find, addClass, removeClass } from './utils/dom.js'
+import { debounce } from 'lodash'
 import inView from 'in-view'
 
 export default class Stories {
@@ -16,7 +17,8 @@ export default class Stories {
 
     this.state = {
       windowWidth: windowRect.width,
-      windowHeight: windowRect.height
+      windowHeight: windowRect.height,
+      inViewSet: false
     }
 
     this.init()
@@ -34,6 +36,57 @@ export default class Stories {
       width,
       height
     }
+  }
+
+  setPortraitImage($image) {
+    const { windowHeight } = this.state
+    const { clientHeight } = $image
+
+    $image.style.left = '0%'
+    $image.style.marginLeft = '0'
+
+    if(clientHeight > windowHeight) {
+      $image.style.top = '50%'
+      $image.style.marginTop = `-${clientHeight/2}px`
+    } else {
+      $image.style.top = '0'
+    }
+  }
+
+  setLandscapeImage($image) {
+    const { windowWidth } = this.state
+    const { clientWidth } = $image
+
+    $image.style.top = '0'
+    $image.style.marginTop = '0'
+
+    if(clientWidth > windowWidth) {
+      $image.style.left = '50%'
+      $image.style.marginLeft = `-${clientWidth/2}px`
+    } else {
+      $image.style.left = '0'
+    }
+  }
+
+  setImageSizes() {
+    const { windowWidth, windowHeight } = this.state
+    const windowAspectRatio = windowWidth/windowHeight
+    const { images } = this.props
+
+    images.forEach($image => {
+      const { clientWidth, clientHeight } = $image
+      const imageAspectRatio =  clientWidth/clientHeight
+
+      if(windowAspectRatio >= imageAspectRatio) {
+        $image.style.width = '100%'
+        $image.style.height = 'auto'
+        this.setPortraitImage($image)
+      } else {
+        $image.style.height = '100%'
+        $image.style.width = 'auto'
+        this.setLandscapeImage($image)
+      }
+    })
   }
 
   stick($sticky) {
@@ -84,7 +137,37 @@ export default class Stories {
       })
   }
 
+  onResize() {
+    window.addEventListener('resize', debounce(() => {
+      if (window.innerWidth > 640) {
+
+        if(!this.state.inViewSet) {
+          this.addInView()
+          this.state.inViewSet = true
+        }
+
+        const windowRect = this.getWindowRect()
+        this.state.windowWidth = windowRect.width
+        this.state.windowHeight = windowRect.height
+        this.setImageSizes()
+      }
+    }, 300))
+  }
+
+  eventListeners() {
+    this.onResize()
+  }
+
   init() {
-    this.addInView()
+    if (window.innerWidth > 640) {
+
+      if(!this.state.inViewSet) {
+        this.addInView()
+        this.state.inViewSet = true
+      }
+
+      this.setImageSizes()
+    }
+    this.eventListeners()
   }
 }
